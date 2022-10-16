@@ -342,8 +342,117 @@ class DeckService {
     }
 
     async create(user, deck) {
-        let deckResponse;
+        let newDeck = await this.loadAndParseDeck(deck);
 
+        let validExpansion = await this.checkValidDeckExpansion(newDeck);
+        if (!validExpansion) {
+            throw new Error('This deck is from a future expansion and not currently supported');
+        }
+
+        let deckExists = await this.deckExistsForUser(user, newDeck.identity);
+        if (deckExists) {
+            throw new Error('Deck already exists.');
+        }
+
+        let response = await this.insertDeck(newDeck, user);
+
+        return this.getById(response.id);
+    }
+
+    async createAlliance(user, deck1, deck2, deck3) {
+        logger.info('18h21 create ' + deck1.uuid + ' ' + deck2.uuid + ' ' + deck3.uuid);
+        let newDeck1 = await this.loadAndParseDeck(deck1);
+        let newDeck2 = await this.loadAndParseDeck(deck2);
+        let newDeck3 = await this.loadAndParseDeck(deck3);
+        let allianceCards = [];
+        let allianceHouses = [];
+        logger.info(
+            'from deck' + newDeck1.houses[0] + ' ' + newDeck2.houses[1] + ' ' + newDeck2.houses[2]
+        );
+
+        logger.info('from deck1.cards' + JSON.stringify(newDeck1.cards));
+
+        for (const card1 of newDeck1.cards) {
+            if (card1.house === newDeck1.houses[0]) {
+                // for ( let i = 0; i< card1.count ; i++){
+                allianceCards.push(card1);
+                logger.info('card deck 1: ' + card1);
+                // }
+            }
+        }
+
+        for (const card2 of newDeck2.cards) {
+            if (card2.house === newDeck2.houses[1]) {
+                // for ( let i = 0; i< card2.count ; i++){
+                allianceCards.push(card2);
+                logger.info('card deck 2: ' + card2);
+                // }
+            }
+        }
+
+        for (const card3 of newDeck3.cards) {
+            if (card3.house === newDeck3.houses[2]) {
+                // for ( let i = 0; i< card3.count ; i++){
+                allianceCards.push(card3);
+                logger.info('card deck 3: ' + card3);
+                // }
+            }
+        }
+        allianceHouses.push(newDeck1.houses[0]);
+        allianceHouses.push(newDeck2.houses[1]);
+        allianceHouses.push(newDeck3.houses[2]);
+
+        let name =
+            'alliance of ' +
+            newDeck1.name.split(' ')[0] +
+            ' ' +
+            newDeck2.name.split(' ')[0] +
+            ' ' +
+            newDeck3.name.split(' ')[0];
+
+        let identity = newDeck1.identity + '$' + newDeck2.identity + '$' + newDeck3.identity;
+
+        let newDeck = {
+            expansion: newDeck1.expansion,
+            username: newDeck1.username,
+            uuid: newDeck1.uuid + '$' + newDeck2.uuid + '$' + newDeck3.uuid,
+            identity: identity
+                .toLowerCase()
+                .replace(/[,?.!"„“”]/gi, '')
+                .replace(/[ '’]/gi, '-'),
+            cardback: '',
+            name: name,
+            houses: allianceHouses,
+            cards: allianceCards,
+            lastUpdated: new Date()
+        };
+
+        if (
+            newDeck1.expansion != newDeck2.expansion ||
+            newDeck1.expansion != newDeck3.expansion ||
+            newDeck2.expansion != newDeck3.expansion
+        ) {
+            throw new Error('Decks for alliance should be from the same expansion');
+        }
+
+        let validExpansion = await this.checkValidDeckExpansion(newDeck);
+        if (!validExpansion) {
+            throw new Error('This deck is from a future expansion and not currently supported');
+        }
+
+        let deckExists = await this.deckExistsForUser(user, newDeck.identity);
+        if (deckExists) {
+            throw new Error('Deck already exists.');
+        }
+
+        let response = await this.insertDeck(newDeck, user);
+
+        return this.getById(response.id);
+    }
+
+    async loadAndParseDeck(deck) {
+        logger.info('loadAndParseDeck' + deck.uuid);
+        let deckResponse;
         try {
             let response = await util.httpRequest(
                 `https://www.keyforgegame.com/api/decks/${deck.uuid}/?links=cards`
@@ -367,20 +476,7 @@ class DeckService {
         }
 
         let newDeck = this.parseDeckResponse(deck.username, deckResponse);
-
-        let validExpansion = await this.checkValidDeckExpansion(newDeck);
-        if (!validExpansion) {
-            throw new Error('This deck is from a future expansion and not currently supported');
-        }
-
-        let deckExists = await this.deckExistsForUser(user, newDeck.identity);
-        if (deckExists) {
-            throw new Error('Deck already exists.');
-        }
-
-        let response = await this.insertDeck(newDeck, user);
-
-        return this.getById(response.id);
+        return newDeck;
     }
 
     async checkValidDeckExpansion(deck) {
@@ -677,7 +773,8 @@ class DeckService {
                 retCard = {
                     id: id,
                     count: count,
-                    maverick: card.house.replace(' ', '').toLowerCase()
+                    maverick: card.house.replace(' ', '').toLowerCase(),
+                    house: card.house.replace(' ', '').toLowerCase()
                 };
             } else if (card.is_anomaly) {
                 retCard = {
@@ -688,7 +785,8 @@ class DeckService {
             } else {
                 retCard = {
                     id: id,
-                    count: count
+                    count: count,
+                    house: card.house.replace(' ', '').toLowerCase()
                 };
             }
 

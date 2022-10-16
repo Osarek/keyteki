@@ -10,7 +10,7 @@ import * as yup from 'yup';
 import Panel from '../Site/Panel';
 import ApiStatus from '../Site/ApiStatus';
 import { Decks } from '../../redux/types';
-import { clearApiStatus, navigate, saveDeck } from '../../redux/actions';
+import { clearApiStatus, navigate, saveDeck, saveAlliance } from '../../redux/actions';
 
 const ImportDeck = () => {
     const { t } = useTranslation();
@@ -54,18 +54,49 @@ const ImportDeck = () => {
             .matches(
                 /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/,
                 t('The URL you entered is invalid.  Please check it and try again.')
+            ),
+        deckLink2: yup
+            .string()
+            // .required(t('You must specify the deck link'))
+            .notOneOf(
+                ['https://www.keyforgegame.com/deck-details/00000000-0000-0000-0000-000000000000'],
+                t('The URL you entered is invalid.  Please check it and try again.')
+            )
+            .matches(
+                /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/,
+                t('The URL you entered is invalid.  Please check it and try again.')
+            ),
+        deckLink3: yup
+            .string()
+            // .required(t('You must specify the deck link'))
+            .notOneOf(
+                ['https://www.keyforgegame.com/deck-details/00000000-0000-0000-0000-000000000000'],
+                t('The URL you entered is invalid.  Please check it and try again.')
+            )
+            .matches(
+                /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/,
+                t('The URL you entered is invalid.  Please check it and try again.')
             )
     });
 
     const initialValues = {
-        deckLink: ''
+        deckLink: '',
+        deckLink2: '',
+        deckLink3: ''
     };
 
     const onSubmit = (values) => {
         const regex = /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/;
         let uuid = values.deckLink.match(regex);
 
-        dispatch(saveDeck({ uuid: uuid[0] }));
+        if (values.deckLink2 != null && values.deckLink3 != null) {
+            let uuid2 = values.deckLink2.match(regex);
+
+            let uuid3 = values.deckLink3.match(regex);
+            dispatch(saveAlliance({ uuid: uuid[0], uuid2: uuid2[0], uuid3: uuid3[0] }));
+        } else {
+            dispatch(saveDeck({ uuid: uuid[0] }));
+        }
     };
 
     return (
@@ -113,7 +144,9 @@ const ImportDeck = () => {
                             >
                                 <Form.Row>
                                     <Form.Group as={Col} xs='9' controlId='formGridDeckLink'>
-                                        <Form.Label>{t('Deck Link')}</Form.Label>
+                                        <Form.Label>
+                                            {t('Deck Link Signle deck of Alliance House 1')}
+                                        </Form.Label>
                                         <Form.Control
                                             name='deckLink'
                                             type='text'
@@ -128,6 +161,46 @@ const ImportDeck = () => {
                                         />
                                         <Form.Control.Feedback type='invalid'>
                                             {formProps.errors.deckLink}
+                                        </Form.Control.Feedback>
+                                    </Form.Group>
+                                </Form.Row>
+                                <Form.Row>
+                                    <Form.Group as={Col} xs='9' controlId='formGridDeckLink2'>
+                                        <Form.Label>{t('Deck link Alliance House 2')}</Form.Label>
+                                        <Form.Control
+                                            name='deckLink2'
+                                            type='text'
+                                            placeholder={t('Enter the deck link')}
+                                            value={formProps.values.deckLink2}
+                                            onChange={formProps.handleChange}
+                                            onBlur={formProps.handleBlur}
+                                            isInvalid={
+                                                formProps.touched.deckLink2 &&
+                                                !!formProps.errors.deckLink2
+                                            }
+                                        />
+                                        <Form.Control.Feedback type='invalid'>
+                                            {formProps.errors.deckLink2}
+                                        </Form.Control.Feedback>
+                                    </Form.Group>
+                                </Form.Row>
+                                <Form.Row>
+                                    <Form.Group as={Col} xs='9' controlId='formGridDeckLink3'>
+                                        <Form.Label>{t('Deck Link Alliance house 3')}</Form.Label>
+                                        <Form.Control
+                                            name='deckLink3'
+                                            type='text'
+                                            placeholder={t('Enter the deck link')}
+                                            value={formProps.values.deckLink3}
+                                            onChange={formProps.handleChange}
+                                            onBlur={formProps.handleBlur}
+                                            isInvalid={
+                                                formProps.touched.deckLink3 &&
+                                                !!formProps.errors.deckLink3
+                                            }
+                                        />
+                                        <Form.Control.Feedback type='invalid'>
+                                            {formProps.errors.deckLink3}
                                         </Form.Control.Feedback>
                                     </Form.Group>
                                 </Form.Row>

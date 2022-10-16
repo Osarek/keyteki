@@ -29,18 +29,53 @@ class SetupPhase extends Phase {
         }
 
         for (const player of this.game.getPlayers()) {
-            let link = {
-                link: 'https://www.keyforgegame.com/deck-details/' + player.deckData.uuid,
-                argType: 'link',
-                label: player.deckData.name
-            };
-            if (this.game.gameFormat !== 'sealed' && !this.game.hideDeckLists) {
-                this.game.addMessage(
-                    '{0} brings {1}{2} to The Crucible',
-                    player,
-                    link,
-                    player.chains > 0 ? ` with ${player.chains} chains` : ''
-                );
+            if (player.deckData.uuid.includes('$')) {
+                let link1 = {
+                    link:
+                        'https://www.keyforgegame.com/deck-details/' +
+                        player.deckData.uuid.split('$')[0],
+                    argType: 'link',
+                    label: player.deckData.identity.split('$')[0]
+                };
+                let link2 = {
+                    link:
+                        'https://www.keyforgegame.com/deck-details/' +
+                        player.deckData.uuid.split('$')[1],
+                    argType: 'link',
+                    label: player.deckData.identity.split('$')[1]
+                };
+                let link3 = {
+                    link:
+                        'https://www.keyforgegame.com/deck-details/' +
+                        player.deckData.uuid.split('$')[2],
+                    argType: 'link',
+                    label: player.deckData.identity.split('$')[2]
+                };
+                if (this.game.gameFormat !== 'sealed' && !this.game.hideDeckLists) {
+                    this.game.addMessage(
+                        '{0} brings {1}{2} to The Crucible , Alliance of {3} {4} {5}',
+                        player,
+                        player.deckData.name,
+                        player.chains > 0 ? ` with ${player.chains} chains` : '',
+                        link1,
+                        link2,
+                        link3
+                    );
+                }
+            } else {
+                let link = {
+                    link: 'https://www.keyforgegame.com/deck-details/' + player.deckData.uuid,
+                    argType: 'link',
+                    label: player.deckData.name
+                };
+                if (this.game.gameFormat !== 'sealed' && !this.game.hideDeckLists) {
+                    this.game.addMessage(
+                        '{0} brings {1}{2} to The Crucible',
+                        player,
+                        link,
+                        player.chains > 0 ? ` with ${player.chains} chains` : ''
+                    );
+                }
             }
         }
     }

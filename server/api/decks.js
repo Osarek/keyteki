@@ -100,24 +100,55 @@ module.exports.init = function (server) {
                 return res.send({ success: false, message: 'uuid must be specified' });
             }
 
-            let deck = Object.assign({}, { uuid: req.body.uuid, username: req.user.username });
-            let savedDeck;
-
-            try {
-                savedDeck = await deckService.create(req.user, deck);
-            } catch (error) {
-                return res.send({
-                    success: false,
-                    message: error.message
-                });
+            if ((req.body.uuid2 && !req.body.uuid3) || (!req.body.uuid2 && req.body.uuid3)) {
+                return res.send({ success: false, message: 'uuid must be specified for alliance' });
             }
 
-            if (!savedDeck) {
-                return res.send({
-                    success: false,
-                    message:
-                        'An error occurred importing your deck.  Please check the Url or try again later.'
-                });
+            let deck = Object.assign({}, { uuid: req.body.uuid, username: req.user.username });
+            let savedDeck;
+            if (req.body.uuid2 && req.body.uuid3) {
+                let deck2 = Object.assign(
+                    {},
+                    { uuid: req.body.uuid2, username: req.user.username }
+                );
+                let deck3 = Object.assign(
+                    {},
+                    { uuid: req.body.uuid3, username: req.user.username }
+                );
+
+                try {
+                    savedDeck = await deckService.createAlliance(req.user, deck, deck2, deck3);
+                } catch (error) {
+                    return res.send({
+                        success: false,
+                        message: error.message
+                    });
+                }
+
+                if (!savedDeck) {
+                    return res.send({
+                        success: false,
+                        message:
+                            'An error occurred importing your deck.  Please check the Url or try again later.'
+                    });
+                }
+            } else {
+                try {
+                    savedDeck = await deckService.create(req.user, deck);
+                } catch (error) {
+                    return res.send({
+                        success: false,
+                        message: error.message
+                    });
+                }
+
+                if (!savedDeck) {
+                    return res.send({
+                        success: false,
+                        message:
+                            'An error occurred importing your deck.  Please check the Url or try again later.'
+                    });
+                }
             }
 
             res.send({ success: true, deck: savedDeck });

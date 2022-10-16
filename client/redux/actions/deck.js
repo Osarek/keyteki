@@ -60,9 +60,11 @@ export function deleteDeck(deck) {
     };
 }
 
-export function saveDeck(deck) {
+export function saveAlliance(decks) {
     let str = JSON.stringify({
-        uuid: deck.uuid
+        uuid: decks.uuid,
+        uuid2: decks.uuid2,
+        uuid3: decks.uuid3
     });
 
     return {

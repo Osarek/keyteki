@@ -61,6 +61,8 @@ import { Constants } from '../../constants';
  * @property {number} wins The number of wins this deck has had
  * @property {number} winRate The win rate of the deck
  * @property {number} usageLevel The usage level of the deck
+ * @property {boolean} isAlliance True is the deck is an Alliance
+ * @property {string} allianceNameDeck1 The name of the deck for the 1st House
  */
 
 /**

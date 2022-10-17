@@ -15,6 +15,17 @@ CREATE TABLE public."Decks"
     "Verified" boolean,
     "ExpansionId" integer NOT NULL,
     "Flagged" boolean,
+    "Enhancements" TEXT NULL,
+    "IsAlliance" boolean NOT NULL default false,
+    "AllianceUuidDeck1" TEXT NULL,
+    "AllianceUuidDeck2" TEXT NULL,
+    "AllianceUuidDeck3" TEXT NULL,
+    "AllianceNameDeck1" TEXT NULL,
+    "AllianceNameDeck2" TEXT NULL,
+    "AllianceNameDeck3" TEXT NULL,
+    "AllianceHouseIdDeck1" INTEGER NULL,
+    "AllianceHouseIdDeck2" INTEGER NULL,
+    "AllianceHouseIdDeck3" INTEGER NULL,
     CONSTRAINT "PK_Decks" PRIMARY KEY ("Id"),
     CONSTRAINT "FK_Decks_Expansions_ExpansionId" FOREIGN KEY ("ExpansionId")
         REFERENCES public."Expansions" ("Id") MATCH SIMPLE

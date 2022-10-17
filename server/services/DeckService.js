@@ -231,6 +231,7 @@ class DeckService {
                 return isSort ? '"Expansion"' : 'e."ExpansionId"';
             case 'winRate':
                 return '"WinRate"';
+
             default:
                 return '"LastUpdated"';
         }
@@ -358,44 +359,48 @@ class DeckService {
 
         return this.getById(response.id);
     }
-
+    async enhancementFusion(enhancementsFusion, enhancementDeck, pips) {
+        if (enhancementDeck.enhancements[pips]) {
+            enhancementsFusion[pips] =
+                enhancementsFusion[pips] + enhancementDeck.enhancements[pips];
+        }
+    }
     async createAlliance(user, deck1, deck2, deck3) {
-        logger.info('18h21 create ' + deck1.uuid + ' ' + deck2.uuid + ' ' + deck3.uuid);
         let newDeck1 = await this.loadAndParseDeck(deck1);
         let newDeck2 = await this.loadAndParseDeck(deck2);
         let newDeck3 = await this.loadAndParseDeck(deck3);
         let allianceCards = [];
         let allianceHouses = [];
-        logger.info(
-            'from deck' + newDeck1.houses[0] + ' ' + newDeck2.houses[1] + ' ' + newDeck2.houses[2]
-        );
 
-        logger.info('from deck1.cards' + JSON.stringify(newDeck1.cards));
+        // let allianceEnhancements = {"amber":0,"draw":0,"damage":0,"capture":0};
+        // this.enhancementFusion(allianceEnhancements,newDeck1,"amber");
+        // this.enhancementFusion(allianceEnhancements,newDeck2,"amber");
+        // this.enhancementFusion(allianceEnhancements,newDeck3,"amber");
+        // this.enhancementFusion(allianceEnhancements,newDeck1,"draw");
+        // this.enhancementFusion(allianceEnhancements,newDeck2,"draw");
+        // this.enhancementFusion(allianceEnhancements,newDeck3,"draw");
+        // this.enhancementFusion(allianceEnhancements,newDeck1,"damage");
+        // this.enhancementFusion(allianceEnhancements,newDeck2,"damage");
+        // this.enhancementFusion(allianceEnhancements,newDeck3,"damage");
+        // this.enhancementFusion(allianceEnhancements,newDeck1,"capture");
+        // this.enhancementFusion(allianceEnhancements,newDeck2,"capture");
+        // this.enhancementFusion(allianceEnhancements,newDeck3,"capture");
 
         for (const card1 of newDeck1.cards) {
-            if (card1.house === newDeck1.houses[0]) {
-                // for ( let i = 0; i< card1.count ; i++){
+            if (card1.house == newDeck1.houses[0]) {
                 allianceCards.push(card1);
-                logger.info('card deck 1: ' + card1);
-                // }
             }
         }
 
         for (const card2 of newDeck2.cards) {
-            if (card2.house === newDeck2.houses[1]) {
-                // for ( let i = 0; i< card2.count ; i++){
+            if (card2.house == newDeck2.houses[1]) {
                 allianceCards.push(card2);
-                logger.info('card deck 2: ' + card2);
-                // }
             }
         }
 
         for (const card3 of newDeck3.cards) {
-            if (card3.house === newDeck3.houses[2]) {
-                // for ( let i = 0; i< card3.count ; i++){
+            if (card3.house == newDeck3.houses[2]) {
                 allianceCards.push(card3);
-                logger.info('card deck 3: ' + card3);
-                // }
             }
         }
         allianceHouses.push(newDeck1.houses[0]);
@@ -424,7 +429,19 @@ class DeckService {
             name: name,
             houses: allianceHouses,
             cards: allianceCards,
-            lastUpdated: new Date()
+            lastUpdated: new Date(),
+            isAlliance: true,
+            // enhancements: allianceEnhancements,
+            allianceUuidDeck1: newDeck1.uuid,
+            allianceUuidDeck2: newDeck2.uuid,
+            allianceUuidDeck3: newDeck3.uuid,
+            allianceNameDeck1: newDeck1.name,
+            allianceNameDeck2: newDeck2.name,
+            allianceNameDeck3: newDeck3.name,
+
+            allianceHouseDeck1: newDeck1.houses[0],
+            allianceHouseDeck2: newDeck2.houses[1],
+            allianceHouseDeck3: newDeck3.houses[2]
         };
 
         if (
@@ -496,14 +513,15 @@ class DeckService {
 
     async insertDeck(deck, user) {
         let ret;
+        logger.info('insertDeck ' + JSON.stringify(deck));
 
         try {
             await db.query('BEGIN');
 
             if (user) {
                 ret = await db.query(
-                    'INSERT INTO "Decks" ("UserId", "Uuid", "Identity", "Name", "IncludeInSealed", "LastUpdated", "Verified", "ExpansionId", "Flagged", "Banned") ' +
-                        'VALUES ($1, $2, $3, $4, $5, $6, false, (SELECT "Id" FROM "Expansions" WHERE "ExpansionId" = $7), false, false) RETURNING "Id"',
+                    'INSERT INTO "Decks" ("UserId", "Uuid", "Identity", "Name", "IncludeInSealed", "LastUpdated", "Verified", "ExpansionId", "Flagged", "Banned", "Enhancements", "IsAlliance","AllianceUuidDeck1","AllianceUuidDeck2","AllianceUuidDeck3","AllianceNameDeck1","AllianceNameDeck2","AllianceNameDeck3","AllianceHouseIdDeck1","AllianceHouseIdDeck2","AllianceHouseIdDeck3") ' +
+                        'VALUES ($1, $2, $3, $4, $5, $6, false, (SELECT "Id" FROM "Expansions" WHERE "ExpansionId" = $7), false, false, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18) RETURNING "Id"',
                     [
                         user.id,
                         deck.uuid,
@@ -511,7 +529,18 @@ class DeckService {
                         deck.name,
                         false,
                         deck.lastUpdated,
-                        deck.expansion
+                        deck.expansion,
+                        deck.enhancements,
+                        deck.isAlliance,
+                        deck.allianceUuidDeck1,
+                        deck.allianceUuidDeck2,
+                        deck.allianceUuidDeck3,
+                        deck.allianceNameDeck1,
+                        deck.allianceNameDeck2,
+                        deck.allianceNameDeck3,
+                        await this.getHouseIdFromName(deck.allianceHouseDeck1),
+                        await this.getHouseIdFromName(deck.allianceHouseDeck2),
+                        await this.getHouseIdFromName(deck.allianceHouseDeck3)
                     ]
                 );
             } else {
@@ -864,7 +893,8 @@ class DeckService {
                 house.replace(' ', '').toLowerCase()
             ),
             cards: cards,
-            lastUpdated: new Date()
+            lastUpdated: new Date(),
+            enhancements: enhancements
         };
     }
 

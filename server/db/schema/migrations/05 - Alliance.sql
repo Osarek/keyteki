@@ -1,0 +1,14 @@
+ALTER TABLE "Decks" ADD COLUMN "Enhancements" TEXT NULL;
+ALTER TABLE "Decks" ADD COLUMN "AllianceUuidDeck1" TEXT NULL;
+ALTER TABLE "Decks" ADD COLUMN "AllianceUuidDeck2" TEXT NULL;
+ALTER TABLE "Decks" ADD COLUMN "AllianceUuidDeck3" TEXT NULL;
+ALTER TABLE "Decks" ADD COLUMN "AllianceNameDeck1" TEXT NULL;
+ALTER TABLE "Decks" ADD COLUMN "AllianceNameDeck2" TEXT NULL;
+ALTER TABLE "Decks" ADD COLUMN "AllianceNameDeck3" TEXT NULL;
+ALTER TABLE "Decks" ADD COLUMN "AllianceHouseIdDeck1" INTEGER NULL;
+ALTER TABLE "Decks" ADD COLUMN "AllianceHouseIdDeck2" INTEGER NULL;
+ALTER TABLE "Decks" ADD COLUMN "AllianceHouseIdDeck3" INTEGER NULL;
+ALTER TABLE "Decks" ADD COLUMN "IsAlliance" boolean NOT NULL default false;
+
+
+

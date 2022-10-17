@@ -29,27 +29,27 @@ class SetupPhase extends Phase {
         }
 
         for (const player of this.game.getPlayers()) {
-            if (player.deckData.uuid.includes('$')) {
+            if (player.deckData.isAlliance) {
                 let link1 = {
                     link:
                         'https://www.keyforgegame.com/deck-details/' +
-                        player.deckData.uuid.split('$')[0],
+                        player.deckData.allianceUuidDeck1,
                     argType: 'link',
-                    label: player.deckData.identity.split('$')[0]
+                    label: player.deckData.allianceUuidDeck1
                 };
                 let link2 = {
                     link:
                         'https://www.keyforgegame.com/deck-details/' +
-                        player.deckData.uuid.split('$')[1],
+                        player.deckData.allianceUuidDeck2,
                     argType: 'link',
-                    label: player.deckData.identity.split('$')[1]
+                    label: player.deckData.allianceUuidDeck1
                 };
                 let link3 = {
                     link:
                         'https://www.keyforgegame.com/deck-details/' +
-                        player.deckData.uuid.split('$')[2],
+                        player.deckData.allianceUuidDeck3,
                     argType: 'link',
-                    label: player.deckData.identity.split('$')[2]
+                    label: player.deckData.allianceUuidDeck3
                 };
                 if (this.game.gameFormat !== 'sealed' && !this.game.hideDeckLists) {
                     this.game.addMessage(

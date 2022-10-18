@@ -34,6 +34,10 @@
         background: theme-color('danger');
     }
 
+    &.alliance {
+        background: theme-color('warning');
+    }
+
     &.not-verified {
         background: theme-color('info');
     }

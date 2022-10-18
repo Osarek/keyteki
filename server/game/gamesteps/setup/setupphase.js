@@ -6,6 +6,7 @@ const AdaptiveDeckSelectionPrompt = require('./AdaptiveDeckSelectionPrompt');
 const FirstPlayerSelection = require('./FirstPlayerSelection');
 const GameStartPrompt = require('./GameStartPrompt');
 const Effects = require('../../effects.js');
+const logger = require('../../../log.js');
 
 class SetupPhase extends Phase {
     constructor(game) {
@@ -30,37 +31,46 @@ class SetupPhase extends Phase {
 
         for (const player of this.game.getPlayers()) {
             if (player.deckData.isAlliance) {
+                logger.info(JSON.stringify(player.deckData));
                 let link1 = {
                     link:
                         'https://www.keyforgegame.com/deck-details/' +
                         player.deckData.allianceUuidDeck1,
                     argType: 'link',
-                    label: player.deckData.allianceUuidDeck1
+                    label: player.deckData.allianceNameDeck1
                 };
                 let link2 = {
                     link:
                         'https://www.keyforgegame.com/deck-details/' +
                         player.deckData.allianceUuidDeck2,
                     argType: 'link',
-                    label: player.deckData.allianceUuidDeck1
+                    label: player.deckData.allianceNameDeck2
                 };
                 let link3 = {
                     link:
                         'https://www.keyforgegame.com/deck-details/' +
                         player.deckData.allianceUuidDeck3,
                     argType: 'link',
-                    label: player.deckData.allianceUuidDeck3
+                    label: player.deckData.allianceNameDeck3
                 };
                 if (this.game.gameFormat !== 'sealed' && !this.game.hideDeckLists) {
                     this.game.addMessage(
-                        '{0} brings {1}{2} to The Crucible , Alliance of {3} {4} {5}',
+                        '{0} brings {1}{2} to The Crucible ',
                         player,
                         player.deckData.name,
-                        player.chains > 0 ? ` with ${player.chains} chains` : '',
-                        link1,
-                        link2,
-                        link3
+                        player.chains > 0 ? ` with ${player.chains} chains` : ''
                     );
+
+                    this.game.addMessage(
+                        'Alliance of {0} {1} and {2} from Archons',
+                        player.deckData.allianceHouseNameDeck1,
+                        player.deckData.allianceHouseNameDeck2,
+                        player.deckData.allianceHouseNameDeck3
+                    );
+
+                    this.game.addMessage('{0}', link1);
+                    this.game.addMessage('{0}', link2);
+                    this.game.addMessage('{0}', link3);
                 }
             } else {
                 let link = {

@@ -8,6 +8,7 @@ import Lobby from './pages/Lobby';
 import Decks from './pages/Decks';
 //import Matches from './pages/Matches';
 import ImportDeck from './Components/Decks/ImportDeck';
+import MakeAlliance from './Components/Decks/MakeAlliance';
 import HowToPlay from './pages/HowToPlay';
 import About from './pages/About';
 import Security from './pages/Security.jsx';
@@ -40,6 +41,7 @@ const routes = [
     { path: '/blocklist', action: () => <BlockList key='blocklist' /> },
     { path: '/decks', action: () => <Decks key='decks' /> },
     { path: '/decks/import', action: () => <ImportDeck key='importDecks' /> },
+    { path: '/decks/alliance', action: () => <MakeAlliance key='makeAlliance' /> },
     { path: '/decks/enhancements', action: () => <Enhancements key='enhancements' /> },
     { path: '/forgot', action: () => <ForgotPassword key='forgotpassword' /> },
     { path: '/how-to-play', action: () => <HowToPlay key='howtoplay' /> },

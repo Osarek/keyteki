@@ -15,7 +15,6 @@ CREATE TABLE public."Decks"
     "Verified" boolean,
     "ExpansionId" integer NOT NULL,
     "Flagged" boolean,
-    "Enhancements" TEXT NULL,
     "IsAlliance" boolean NOT NULL default false,
     "AllianceUuidDeck1" TEXT NULL,
     "AllianceUuidDeck2" TEXT NULL,
@@ -33,6 +32,18 @@ CREATE TABLE public."Decks"
         ON DELETE CASCADE,
     CONSTRAINT "FK_Decks_Users_UserId" FOREIGN KEY ("UserId")
         REFERENCES public."Users" ("Id") MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE,
+    CONSTRAINT "FK_Decks_Houses_AllianceHouseIdDeck1" FOREIGN KEY ("AllianceHouseIdDeck1")
+        REFERENCES public."Houses" ("Id") MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE,
+    CONSTRAINT "FK_Decks_Houses_AllianceHouseIdDeck2" FOREIGN KEY ("AllianceHouseIdDeck2")
+        REFERENCES public."Houses" ("Id") MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE,
+    CONSTRAINT "FK_Decks_Houses_AllianceHouseIdDeck3" FOREIGN KEY ("AllianceHouseIdDeck3")
+        REFERENCES public."Houses" ("Id") MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE CASCADE
 )

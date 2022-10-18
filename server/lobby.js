@@ -795,7 +795,8 @@ class Lobby {
                     officialRole: true,
                     usageLevel: deckUsageLevel,
                     verified: !!deck.verified,
-                    impossible: isStandalone && deck.id >= 5
+                    impossible: isStandalone && deck.id >= 5,
+                    alliance: deck.isAlliance
                 };
 
                 deck.usageCount = 0;

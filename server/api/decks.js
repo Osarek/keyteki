@@ -104,16 +104,20 @@ module.exports.init = function (server) {
                 return res.send({ success: false, message: 'uuid must be specified for alliance' });
             }
 
-            let deck = Object.assign({}, { uuid: req.body.uuid, username: req.user.username });
+            let deck = Object.assign(
+                {},
+                { uuid: req.body.uuid, username: req.user.username, house: req.body.house1 }
+            );
             let savedDeck;
-            if (req.body.uuid2 && req.body.uuid3) {
+            if (req.body.uuid && req.body.uuid2 && req.body.uuid3) {
+                //This is an alliance
                 let deck2 = Object.assign(
                     {},
-                    { uuid: req.body.uuid2, username: req.user.username }
+                    { uuid: req.body.uuid2, username: req.user.username, house: req.body.house2 }
                 );
                 let deck3 = Object.assign(
                     {},
-                    { uuid: req.body.uuid3, username: req.user.username }
+                    { uuid: req.body.uuid3, username: req.user.username, house: req.body.house3 }
                 );
 
                 try {

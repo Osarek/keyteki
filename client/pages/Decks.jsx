@@ -46,6 +46,9 @@ const DecksComponent = () => {
                             <Link className='btn btn-primary' href='/decks/import'>
                                 <Trans>Import Deck</Trans>
                             </Link>
+                            <Link className='btn btn-primary' href='/decks/alliance'>
+                                <Trans>Make an Alliance</Trans>
+                            </Link>
                         </Col>
                         <DeckList />
                     </Panel>

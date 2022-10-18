@@ -1,4 +1,4 @@
-ALTER TABLE "Decks" ADD COLUMN "Enhancements" TEXT NULL;
+ALTER TABLE "Decks" ADD COLUMN "IsAlliance" boolean NOT NULL default false;
 ALTER TABLE "Decks" ADD COLUMN "AllianceUuidDeck1" TEXT NULL;
 ALTER TABLE "Decks" ADD COLUMN "AllianceUuidDeck2" TEXT NULL;
 ALTER TABLE "Decks" ADD COLUMN "AllianceUuidDeck3" TEXT NULL;
@@ -8,7 +8,11 @@ ALTER TABLE "Decks" ADD COLUMN "AllianceNameDeck3" TEXT NULL;
 ALTER TABLE "Decks" ADD COLUMN "AllianceHouseIdDeck1" INTEGER NULL;
 ALTER TABLE "Decks" ADD COLUMN "AllianceHouseIdDeck2" INTEGER NULL;
 ALTER TABLE "Decks" ADD COLUMN "AllianceHouseIdDeck3" INTEGER NULL;
-ALTER TABLE "Decks" ADD COLUMN "IsAlliance" boolean NOT NULL default false;
+
+ALTER TABLE "Decks" ADD CONSTRAINT "FK_Decks_Houses_AllianceHouseIdDeck1" FOREIGN KEY ("AllianceHouseIdDeck1")    REFERENCES public."Houses" ("Id") MATCH SIMPLE ON UPDATE NO ACTION ON DELETE CASCADE;
+ALTER TABLE "Decks" ADD CONSTRAINT "FK_Decks_Houses_AllianceHouseIdDeck2" FOREIGN KEY ("AllianceHouseIdDeck2") REFERENCES public."Houses" ("Id") MATCH SIMPLE ON UPDATE NO ACTION ON DELETE CASCADE;
+ALTER TABLE "Decks" ADD CONSTRAINT "FK_Decks_Houses_AllianceHouseIdDeck3" FOREIGN KEY ("AllianceHouseIdDeck3") REFERENCES public."Houses" ("Id") MATCH SIMPLE ON UPDATE NO ACTION ON DELETE CASCADE;
+
 
 
 

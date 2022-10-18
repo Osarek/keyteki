@@ -18,6 +18,7 @@ const DeckStatus = ({ status }) => {
         popular: status.usageLevel === 2 && !status.verified,
         notorious: status.usageLevel === 3 && !status.verified,
         'casual-play': status.basicRules && status.impossible,
+        alliance: status.alliance,
         valid:
             (status.usageLevel === 0 || status.verified) &&
             status.basicRules &&
@@ -38,6 +39,8 @@ const DeckStatus = ({ status }) => {
         statusName = t('Notorious');
     } else if (status.impossible) {
         statusName = t('Impossible Deck');
+    } else if (status.alliance) {
+        statusName = t('Alliance');
     } else {
         statusName = t('Valid');
     }

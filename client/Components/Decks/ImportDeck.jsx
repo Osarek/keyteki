@@ -89,7 +89,7 @@ const ImportDeck = () => {
         const regex = /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/;
         let uuid = values.deckLink.match(regex);
 
-        if (values.deckLink2 != null && values.deckLink3 != null) {
+        if (values.deckLink1 && values.deckLink2 && values.deckLink3) {
             let uuid2 = values.deckLink2.match(regex);
 
             let uuid3 = values.deckLink3.match(regex);

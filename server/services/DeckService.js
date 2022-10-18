@@ -151,6 +151,7 @@ class DeckService {
     }
 
     async createStandalone(deck) {
+        deck.isAlliance = false;
         return this.insertDeck(deck);
     }
 
@@ -354,6 +355,7 @@ class DeckService {
         if (deckExists) {
             throw new Error('Deck already exists.');
         }
+        newDeck.isAlliance = false;
 
         let response = await this.insertDeck(newDeck, user);
 

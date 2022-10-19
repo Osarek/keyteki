@@ -7,6 +7,8 @@ const FirstPlayerSelection = require('./FirstPlayerSelection');
 const GameStartPrompt = require('./GameStartPrompt');
 const Effects = require('../../effects.js');
 const logger = require('../../../log.js');
+const Houses = require('../../../constants').Houses;
+const HousesNames = require('../../../constants').HousesNames;
 
 class SetupPhase extends Phase {
     constructor(game) {
@@ -61,11 +63,13 @@ class SetupPhase extends Phase {
                         player.chains > 0 ? ` with ${player.chains} chains` : ''
                     );
 
+                    console.log(JSON.stringify(player.deckData));
+
                     this.game.addMessage(
                         'Alliance of {0} {1} and {2} from Archons',
-                        player.deckData.allianceHouseNameDeck1,
-                        player.deckData.allianceHouseNameDeck2,
-                        player.deckData.allianceHouseNameDeck3
+                        HousesNames[Houses.indexOf(player.deckData.allianceHouseCodeDeck1)],
+                        HousesNames[Houses.indexOf(player.deckData.allianceHouseCodeDeck2)],
+                        HousesNames[Houses.indexOf(player.deckData.allianceHouseCodeDeck3)]
                     );
 
                     this.game.addMessage('{0}', link1);

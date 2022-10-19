@@ -308,9 +308,9 @@ class DeckService {
         try {
             decks = await db.query(
                 'SELECT sq.* ,' +
-                    'h1."Name" as alliancehousenamedeck1 ,' +
-                    'h2."Name" as alliancehousenamedeck2 ,' +
-                    'h3."Name" as alliancehousenamedeck3 ,' +
+                    'h1."Code" as alliancehousecodedeck1 ,' +
+                    'h2."Code" as alliancehousecodedeck2 ,' +
+                    'h3."Code" as alliancehousecodedeck3 ,' +
                     'CASE WHEN "WinCount" + "LoseCount" = 0 THEN 0 ELSE (CAST("WinCount" AS FLOAT) / ("WinCount" + "LoseCount")) * 100 END AS "WinRate" FROM ( ' +
                     'SELECT d.*, u."Username", e."ExpansionId" as "Expansion", (SELECT COUNT(*) FROM "Decks" WHERE "Name" = d."Name") AS DeckCount, ' +
                     '(SELECT COUNT(*) FROM "Games" g JOIN "GamePlayers" gp ON gp."GameId" = g."Id" WHERE g."WinnerId" = $1 AND gp."DeckId" = d."Id") AS "WinCount", ' +
@@ -334,12 +334,7 @@ class DeckService {
         }
 
         for (let deck of decks) {
-            logger.info('BeforeMap' + JSON.stringify(deck));
-
             let retDeck = this.mapDeck(deck);
-
-            logger.info('after map' + JSON.stringify(retDeck));
-
             await this.getDeckCardsAndHouses(retDeck);
 
             retDecks.push(retDeck);
@@ -414,9 +409,34 @@ class DeckService {
         const codeHouse1 = deck1.house.toLowerCase().replace(' ', '');
         const codeHouse2 = deck2.house.toLowerCase().replace(' ', '');
         const codeHouse3 = deck3.house.toLowerCase().replace(' ', '');
+
+        if (codeHouse1 === codeHouse2 || codeHouse1 === codeHouse3 || codeHouse1 === codeHouse3) {
+            throw new Error('You cannot selected the same house twice.');
+        }
+        if (!codeHouse1 || !codeHouse2 || !codeHouse3) {
+            throw new Error(
+                'Three houses is mandatory, got house1:"' +
+                    deck1.house +
+                    '", house2:"' +
+                    deck2.house +
+                    '", house3:"' +
+                    deck3.house +
+                    '"'
+            );
+        }
         let newDeck1 = await this.loadAndParseDeck(deck1);
         let newDeck2 = await this.loadAndParseDeck(deck2);
         let newDeck3 = await this.loadAndParseDeck(deck3);
+
+        if (!newDeck1.houses.includes(codeHouse1)) {
+            throw new Error('House ' + deck1.house + " doesn't belongs to " + newDeck1.name);
+        }
+        if (!newDeck2.houses.includes(codeHouse2)) {
+            throw new Error('House ' + deck2.house + " doesn't belongs to " + newDeck2.name);
+        }
+        if (!newDeck3.houses.includes(codeHouse3)) {
+            throw new Error('House ' + deck3.house + " doesn't belongs to " + newDeck3.name);
+        }
 
         newDeck1 = await this.checkEnhancementAndLoadIfNeeded(user, newDeck1);
         newDeck2 = await this.checkEnhancementAndLoadIfNeeded(user, newDeck2);
@@ -956,9 +976,9 @@ class DeckService {
             allianceNameDeck1: null,
             allianceNameDeck2: null,
             allianceNameDeck3: null,
-            allianceHouseNameDeck1: null,
-            allianceHouseNameDeck2: null,
-            allianceHouseNameDeck3: null
+            allianceHouseCodeDeck1: null,
+            allianceHouseCodeDeck2: null,
+            allianceHouseCodeDeck3: null
         };
     }
 
@@ -987,9 +1007,9 @@ class DeckService {
             allianceHouseIdDeck2: deck.AllianceHouseIdDeck2,
             allianceHouseIdDeck3: deck.AllianceHouseIdDeck3,
             //alliancehouseNamedeck* should be in lowercase
-            allianceHouseNameDeck1: deck.alliancehousenamedeck1,
-            allianceHouseNameDeck2: deck.alliancehousenamedeck2,
-            allianceHouseNameDeck3: deck.alliancehousenamedeck3
+            allianceHouseCodeDeck1: deck.alliancehousecodedeck1,
+            allianceHouseCodeDeck2: deck.alliancehousecodedeck2,
+            allianceHouseCodeDeck3: deck.alliancehousecodedeck3
         };
     }
 }

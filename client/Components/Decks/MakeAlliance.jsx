@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Col, Form, Button } from 'react-bootstrap';
 import { useSelector, useDispatch } from 'react-redux';
@@ -12,13 +12,24 @@ import ApiStatus from '../Site/ApiStatus';
 import { Constants } from '../../constants';
 import { Decks } from '../../redux/types';
 import { clearApiStatus, navigate, saveAlliance } from '../../redux/actions';
-import classNames from 'classnames';
 
 import './MakeAlliance.scss';
 
 const MakeAlliance = () => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
+
+    const [allianceHouses, setAllianceHouses] = useState({ house1: '', house2: '', house3: '' });
+    const handleChangeHouse = (e) => {
+        const { name } = e.target;
+        const housedeck = 'house' + name.split('_')[1];
+        const value = name.split('_')[0];
+        setAllianceHouses((prevState) => ({
+            ...prevState,
+            [housedeck]: value
+        }));
+    };
+
     const apiState = useSelector((state) => {
         const retState = state.api[Decks.SaveDeck];
 
@@ -29,11 +40,8 @@ const MakeAlliance = () => {
                 dispatch(navigate('/decks'));
             }, 1000);
         }
-
         return retState;
     });
-
-    let statsClass = classNames('panel player-stats');
 
     const schema = yup.object({
         deckLink1: yup
@@ -68,27 +76,7 @@ const MakeAlliance = () => {
             .matches(
                 /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/,
                 t('The URL you entered is invalid.  Please check it and try again.')
-            ),
-        houseDeck1: yup
-            .string()
-            .matches(
-                /Saurian|Dis|Brobnar|Mars|Star Alliance|Shadows|Unfathomable|Sanctum|Untamed|Logos/,
-                t(
-                    'The choosen house in invalid. Should be Saurian Dis Brobnar Mars Star Alliance Shadows Unfathomable Sanctum Untamed Logos'
-                )
             )
-        // houseDeck2: yup
-        //     .string()
-        //     .matches(
-        //         /[123]{1}/,
-        //         t('The choosen house in invalid. Should be 1 2 or 3')
-        //     ),
-        // houseDeck3: yup
-        //     .string()
-        //     .matches(
-        //         /[123]{1}/,
-        //         t('The choosen house in invalid. Should be 1 2 or 3')
-        //     )
     });
 
     const initialValues = {
@@ -107,9 +95,9 @@ const MakeAlliance = () => {
             let uuid3 = values.deckLink3.match(regex);
             dispatch(
                 saveAlliance(
-                    { uuid: uuid[0], house: house1 },
-                    { uuid: uuid2[0], house: house2 },
-                    { uuid: uuid3[0], house: house3 }
+                    { uuid: uuid[0], house: allianceHouses.house1 },
+                    { uuid: uuid2[0], house: allianceHouses.house2 },
+                    { uuid: uuid3[0], house: allianceHouses.house3 }
                 )
             );
         }
@@ -119,38 +107,26 @@ const MakeAlliance = () => {
         return houseTitle[0].toUpperCase() + houseTitle.slice(1);
     };
 
-    let house1 = '';
-    let house2 = '';
-    let house3 = '';
+    let houses1 = Constants.Houses.map((houseCode) => houseCode);
+    let houses2 = Constants.Houses.map((houseCode) => houseCode);
+    let houses3 = Constants.Houses.map((houseCode) => houseCode);
 
-    const getHouses = (formProps, deckNumber) => {
-        let houses = Constants.Houses;
+    const getHouses = (availableHouses, deckNumber) => {
         return (
             <div className='state'>
-                {houses.map((house) => (
+                {/* {Array.from(thisDeckHousesMap.keys()).map((houseCodeLoop) => ( */}
+                {availableHouses.map((houseCodeLoop) => (
                     <img
-                        key={house}
-                        onClick={() => {
-                            if (deckNumber === 1) {
-                                house1 = getHouse(house);
-                                formProps.values.houseDeck1 = house1;
-                            } else if (deckNumber === 2) {
-                                house2 = getHouse(house);
-                            } else if (deckNumber === 3) {
-                                house3 = getHouse(house);
-                            }
-                            console.log('Click on ' + house);
-                            console.log('for ' + deckNumber);
-                        }}
+                        key={houseCodeLoop + '_' + deckNumber}
+                        name={houseCodeLoop + '_' + deckNumber}
+                        onClick={handleChangeHouse}
                         className={`img-fluid ${
-                            (house1 === getHouse(house) && deckNumber === 1) ||
-                            (house2 === getHouse(house) && deckNumber === 2) ||
-                            (house3 === getHouse(house) && deckNumber === 3)
+                            allianceHouses['house' + deckNumber] === houseCodeLoop
                                 ? 'active'
                                 : 'inactive'
                         }-house`}
-                        src={Constants.IdBackHousePaths[house]}
-                        title={getHouse(house)}
+                        src={Constants.IdBackHousePaths[houseCodeLoop]}
+                        title={getHouse(houseCodeLoop)}
                     />
                 ))}
             </div>
@@ -215,24 +191,9 @@ const MakeAlliance = () => {
                                                 !!formProps.errors.deckLink1
                                             }
                                         />
-                                        <div className={statsClass}>
-                                            <div className='state'>{getHouses(formProps, 1)}</div>
-                                        </div>{' '}
-                                        <Form.Control
-                                            name='houseDeck1'
-                                            type='text'
-                                            placeholder='Saurian Dis Brobnar Mars Star Alliance Shadows Unfathomable Sanctum Untamed Logos'
-                                            value={formProps.values.houseDeck1}
-                                            onChange={formProps.handleChange}
-                                            onBlur={formProps.handleBlur}
-                                            isInvalid={
-                                                formProps.touched.houseDeck1 &&
-                                                !!formProps.errors.houseDeck1
-                                            }
-                                        />
+                                        {getHouses(houses1, 1)}
                                         <Form.Control.Feedback type='invalid'>
                                             {formProps.errors.deckLink1}
-                                            {formProps.errors.houseDeck1}
                                         </Form.Control.Feedback>
                                     </Form.Group>
                                 </Form.Row>
@@ -251,22 +212,9 @@ const MakeAlliance = () => {
                                                 !!formProps.errors.deckLink2
                                             }
                                         />
-                                        {getHouses(formProps, 2)}
-                                        <Form.Control
-                                            name='houseDeck2'
-                                            type='text'
-                                            placeholder='Saurian Dis Brobnar Mars Star Alliance Shadows Unfathomable Sanctum Untamed Logos'
-                                            value={formProps.values.houseDeck2}
-                                            onChange={formProps.handleChange}
-                                            onBlur={formProps.handleBlur}
-                                            isInvalid={
-                                                formProps.touched.houseDeck2 &&
-                                                !!formProps.errors.houseDeck2
-                                            }
-                                        />
+                                        {getHouses(houses2, 2)}
                                         <Form.Control.Feedback type='invalid'>
                                             {formProps.errors.deckLink2}
-                                            {formProps.errors.houseDeck2}
                                         </Form.Control.Feedback>
                                     </Form.Group>
                                 </Form.Row>
@@ -285,22 +233,9 @@ const MakeAlliance = () => {
                                                 !!formProps.errors.deckLink3
                                             }
                                         />
-                                        {getHouses(formProps, 3)}
-                                        <Form.Control
-                                            name='houseDeck3'
-                                            type='text'
-                                            placeholder='Saurian Dis Brobnar Mars Star Alliance Shadows Unfathomable Sanctum Untamed Logos'
-                                            value={formProps.values.houseDeck3}
-                                            onChange={formProps.handleChange}
-                                            onBlur={formProps.handleBlur}
-                                            isInvalid={
-                                                formProps.touched.houseDeck3 &&
-                                                !!formProps.errors.houseDeck3
-                                            }
-                                        />
+                                        {getHouses(houses3, 3)}
                                         <Form.Control.Feedback type='invalid'>
                                             {formProps.errors.deckLink3}
-                                            {formProps.errors.houseDeck3}
                                         </Form.Control.Feedback>
                                     </Form.Group>
                                 </Form.Row>

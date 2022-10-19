@@ -69,6 +69,7 @@ export function saveAlliance(deck1, deck2, deck3) {
         house2: deck2.house,
         house3: deck3.house
     });
+    console.log('saveAlliance ' + str);
 
     return {
         types: [Decks.SaveDeck, Decks.DeckSaved],

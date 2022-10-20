@@ -29,6 +29,8 @@ const DeckStatus = ({ status }) => {
 
     if (!status.basicRules) {
         statusName = t('Invalid');
+    } else if (status.alliance) {
+        statusName = t('Alliance');
     } else if (status.notVerified) {
         statusName = t('Enhancements Not Verified');
     } else if (status.usageLevel === 1 && !status.verified) {
@@ -39,8 +41,6 @@ const DeckStatus = ({ status }) => {
         statusName = t('Notorious');
     } else if (status.impossible) {
         statusName = t('Impossible Deck');
-    } else if (status.alliance) {
-        statusName = t('Alliance');
     } else {
         statusName = t('Valid');
     }

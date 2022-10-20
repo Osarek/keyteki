@@ -976,9 +976,9 @@ class DeckService {
             allianceNameDeck1: null,
             allianceNameDeck2: null,
             allianceNameDeck3: null,
-            allianceHouseCodeDeck1: null,
-            allianceHouseCodeDeck2: null,
-            allianceHouseCodeDeck3: null
+            allianceHouseIdDeck1: null,
+            allianceHouseIdDeck2: null,
+            allianceHouseIdDeck3: null
         };
     }
 

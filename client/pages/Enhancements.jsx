@@ -72,7 +72,6 @@ const Enhancements = () => {
     }
 
     const enhancementRegex = /Enhance (.+?)\./;
-    console.log(selectedDeck);
     let enhancements = {};
     let totalEnhancements = 0;
     let totalUsed = 0;
